@@ -2,6 +2,12 @@
 
 A CLI tool to remove watermarks from images using the reverse alpha blending algorithm.
 
+## Demo
+
+| Original | Processed |
+| :---: | :---: |
+| <img src="demo/before.png" width="400" /> | <img src="demo/after.png" width="400" /> |
+
 ## Installation
 
 You can install the tool globally using `make`:
@@ -43,14 +49,6 @@ Process current directory:
 ```bash
 gemini-wm-remove -i .
 ```
-
-## Demo
-
-Here is an example of the watermark removal:
-
-| Original | Processed |
-| :---: | :---: |
-| <img src="demo/before.png" width="400" /> | <img src="demo/after.png" width="400" /> |
 
 ## Development
 
