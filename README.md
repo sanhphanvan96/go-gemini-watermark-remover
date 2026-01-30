@@ -44,6 +44,14 @@ Process current directory:
 gemini-wm-remove -i .
 ```
 
+## Demo
+
+Here is an example of the watermark removal:
+
+| Original | Processed |
+| :---: | :---: |
+| <img src="demo/before.png" width="400" /> | <img src="demo/after.png" width="400" /> |
+
 ## Development
 
 - `make build`: Build the binary locally.
