@@ -1,0 +1,9 @@
+# Binaries
+gemini-wm-remove
+
+# User Data
+input/
+output/
+
+# Mac
+.DS_Store
