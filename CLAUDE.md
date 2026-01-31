@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Install**: `make install` (installs binary to `~/.local/bin`)
 - **Clean**: `make clean`
 - **Run**: `./gemini-wm-remove -i <input_path> -o <output_path>`
-  - Flags: `-i` (input), `-o` (output), `-w` (workers), `-v` (verbose)
+  - Flags: `-i` (input), `-o` (output), `-w` (workers), `-f` (force/overwrite), `-v` (verbose)
 - **Test**: `go test ./...`
 
 ## Architecture

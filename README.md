@@ -31,6 +31,7 @@ gemini-wm-remove -i <input> -o <output>
 - `-i, -input`: Input file or directory (required).
 - `-o, -output`: Output directory (default: `output`).
 - `-w, -workers`: Number of concurrent workers (default: NumCPU).
+- `-f, -force`: Force overwrite existing files (default: skip existing).
 - `-v, -verbose`: Enable verbose logging.
 
 ### Examples
@@ -49,6 +50,9 @@ Process current directory:
 ```bash
 gemini-wm-remove -i .
 ```
+
+### Note on Metadata
+Since this tool processes images by decoding and re-encoding the pixel data, all original metadata (EXIF, IPTC, XMP, AI-generated tags) will be stripped from the output images. This essentially anonymizes the images and removes any hidden AI generation markers.
 
 ## Development
 

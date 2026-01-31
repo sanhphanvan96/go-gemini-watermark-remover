@@ -21,6 +21,7 @@ var (
 	outputPath string
 	workers    int
 	verbose    bool
+	force      bool
 )
 
 func init() {
@@ -35,6 +36,9 @@ func init() {
 
 	flag.BoolVar(&verbose, "verbose", false, "Verbose logging")
 	flag.BoolVar(&verbose, "v", false, "Verbose logging (shorthand)")
+
+	flag.BoolVar(&force, "force", false, "Force overwrite existing files")
+	flag.BoolVar(&force, "f", false, "Force overwrite existing files (shorthand)")
 
 	// Register formats
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
@@ -95,20 +99,26 @@ func main() {
 
 	// Process results
 	successCount := 0
+	skippedCount := 0
 	start := time.Now()
 	for res := range results {
-		if res != "" {
+		if strings.HasPrefix(res, "Skipped:") {
+			skippedCount++
+			if verbose {
+				fmt.Println(res)
+			}
+		} else if res != "" {
+			successCount++
 			if verbose {
 				fmt.Println(res)
 			}
 		} else {
 			// Error case, handled in worker
 		}
-		successCount++
 	}
 
 	duration := time.Since(start)
-	fmt.Printf("Processed %d images in %.2fs\n", successCount, duration.Seconds())
+	fmt.Printf("Processed %d images (Skipped %d) in %.2fs\n", successCount, skippedCount, duration.Seconds())
 	fmt.Printf("Output saved to: %s\n", outputPath)
 }
 
@@ -143,8 +153,12 @@ func worker(id int, jobs <-chan string, results chan<- string, wg *sync.WaitGrou
 	for file := range jobs {
 		err := processFile(file)
 		if err != nil {
-			fmt.Printf("Error processing %s: %v\n", filepath.Base(file), err)
-			results <- ""
+			if err.Error() == "skipped" {
+				results <- fmt.Sprintf("Skipped: %s", filepath.Base(file))
+			} else {
+				fmt.Printf("Error processing %s: %v\n", filepath.Base(file), err)
+				results <- ""
+			}
 		} else {
 			results <- fmt.Sprintf("Processed: %s", filepath.Base(file))
 		}
@@ -152,6 +166,15 @@ func worker(id int, jobs <-chan string, results chan<- string, wg *sync.WaitGrou
 }
 
 func processFile(path string) error {
+	outName := filepath.Join(outputPath, filepath.Base(path))
+
+	// Check if file exists
+	if !force {
+		if _, err := os.Stat(outName); err == nil {
+			return fmt.Errorf("skipped")
+		}
+	}
+
 	f, err := os.Open(path)
 	if err != nil {
 		return err
@@ -168,7 +191,6 @@ func processFile(path string) error {
 		return fmt.Errorf("processing error: %w", err)
 	}
 
-	outName := filepath.Join(outputPath, filepath.Base(path))
 	outF, err := os.Create(outName)
 	if err != nil {
 		return err
